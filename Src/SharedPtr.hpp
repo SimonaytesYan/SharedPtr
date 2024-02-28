@@ -16,7 +16,7 @@ public:
 
     ~Wrapper()
     {
-        // ??
+        ptr->~T();
     }
 
     void IncrementCnt()
@@ -32,7 +32,7 @@ public:
         if (counter == 0)
         {
             printf("Object %p end lifetime\n", ptr);
-            delete ptr; //???
+            ptr->~T();
         }
     }
 
