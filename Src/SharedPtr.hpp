@@ -24,7 +24,7 @@ public:
         counter++;
     }
 
-    void DecrementCnt() 
+    void DecrementCnt() virtual
     { 
         assert(counter > 0);
         counter--;
@@ -39,12 +39,45 @@ public:
     size_t GetCnt()
     { return counter; }
 
-    T* GetPtr()
+    T* GetPtr() virtual
     { return ptr; }
 
-private:
+protected:
     size_t counter;
     T*  ptr;
+};
+
+
+template <class T>
+class OwnerWrapper : public Wrapper
+{
+    T* GetPtr() override
+    { return ptr; }
+
+    template<class... Args>
+    OwnerWrapper(Args... args) :
+    Wrapper (nullptr),
+    T (args)
+    { }
+
+    OwnerWrapper
+
+    void DecrementCnt() override
+    { 
+        assert(counter > 0);
+        counter--;
+
+        if (counter == 0)
+        {
+            delete this;
+        }
+    }
+
+    ~OwnerWrapper()
+    { }
+
+private:
+    T object;
 };
 
 template <class T>
@@ -67,9 +100,21 @@ public:
 
     ~SharedPtr();
     
-private:
+private:    
+    SharedPtr(Wrapper* wrapper) : 
+    wrapper(wrapper)
+    {}
+
+private:    
     Wrapper<T>* wrapper;
 };
+
+template<class T, class... Args>
+SharedPtr<T> make_shared(Args... args)
+{
+    OwnerWrapper<T> owner = OwnerWrapper<T>(args);
+
+}
 
 template <class T>
 void SharedPtr<T>::reset()
