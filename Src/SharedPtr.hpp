@@ -1,14 +1,22 @@
 #pragma once
 
+#include <assert.h>
+#include <stdio.h>
+
 template <class T>
 class Wrapper
 {
-    int counter;
-    T*  ptr;
-
+    
+public:
     Wrapper(T* object)
     {
         ptr = object;
+        printf("Object %p wrapper lifetime\n", ptr);
+    }
+
+    ~Wrapper()
+    {
+        // ??
     }
 
     void IncrementCnt()
@@ -18,11 +26,25 @@ class Wrapper
 
     void DecrementCnt() 
     { 
+        assert(counter > 0);
         counter--;
 
         if (counter == 0)
-            delete ptr;
+        {
+            printf("Object %p end lifetime\n", ptr);
+            delete ptr; //???
+        }
     }
+
+    size_t GetCnt()
+    { return counter; }
+
+    T* GetPtr()
+    { return ptr; }
+
+private:
+    size_t counter;
+    T*  ptr;
 };
 
 template <class T>
@@ -30,7 +52,9 @@ class SharedPtr
 {
     Wrapper<T>* wrapper;
 
-    void reset();
+    void   reset();
+    size_t use_count();
+    T*     get();
 
     T operator*  ();
     T* operator()();

@@ -5,8 +5,8 @@ SRC = Src/
 BIN = Bin/
 OBJ = Obj/
 
-all: shared_ptr main.cpp
+all: shared_ptr $(SRC)main.cpp
 	$(CPP) $(SRC)main.cpp -o $(BIN)run
 
 shared_ptr: $(SRC)SharedPtr.cpp $(SRC)SharedPtr.hpp
-	$(CPP) -c $(SRC)SharedPtr.cpp -o $(BIN)SharedPtr.o
+	$(CPP) -c $(SRC)SharedPtr.cpp -o $(OBJ)SharedPtr.o

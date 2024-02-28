@@ -7,15 +7,27 @@ void SharedPtr<T>::reset()
 }
 
 template <class T>
+size_t SharedPtr<T>::use_count()
+{
+    return wrapper->GetCnt();
+}
+
+template <class T>
+T* SharedPtr<T>::get()
+{
+    return wrapper->ptr;
+}
+
+template <class T>
 T SharedPtr<T>::operator*()
 {
-    return *object.ptr;
+    return *wrapper->GetPtr();
 }
 
 template <class T>
 T* SharedPtr<T>::operator() ()
 {
-    return object.ptr;
+    return wrapper->GetPtr();
 }
 
 template <class T>
