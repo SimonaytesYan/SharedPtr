@@ -3,173 +3,126 @@
 #include <assert.h>
 #include <stdio.h>
 
-template <class T>
-class Wrapper
-{
-    
-public:
-    Wrapper(T* object)
-    {
-        ptr = object;
-        printf("Object %p wrapper lifetime\n", ptr);
-    }
+#include "Wrapper.hpp"
 
-    ~Wrapper()
-    {
-        ptr->~T();
-    }
-
-    void IncrementCnt()
-    {
-        counter++;
-    }
-
-    void DecrementCnt() virtual
-    { 
-        assert(counter > 0);
-        counter--;
-
-        if (counter == 0)
-        {
-            printf("Object %p end lifetime\n", ptr);
-            ptr->~T();
-        }
-    }
-
-    size_t GetCnt()
-    { return counter; }
-
-    T* GetPtr() virtual
-    { return ptr; }
-
-protected:
-    size_t counter;
-    T*  ptr;
+enum SharedPtrType {
+    Default,
+    Owner
 };
 
-
-template <class T>
-class OwnerWrapper : public Wrapper
-{
-    T* GetPtr() override
-    { return ptr; }
-
-    template<class... Args>
-    OwnerWrapper(Args... args) :
-    Wrapper (nullptr),
-    T (args)
-    { }
-
-    OwnerWrapper
-
-    void DecrementCnt() override
-    { 
-        assert(counter > 0);
-        counter--;
-
-        if (counter == 0)
-        {
-            delete this;
-        }
-    }
-
-    ~OwnerWrapper()
-    { }
-
-private:
-    T object;
-};
-
-template <class T>
+template <class T, SharedPtrType Type = Default>
 class SharedPtr
 {
 public:
-    void   reset();
-    size_t use_count();
-    T*     get();
+    void reset()
+    {
+        printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
+        wrapper->DecrementCnt();
+        if (wrapper->GetCnt() == 0)
+            delete wrapper;
+    }
 
-    T operator*  ();
-    T* operator()();
+    size_t use_count()
+    { return wrapper->GetCnt(); }
     
-    SharedPtr<T>& operator=(const SharedPtr<T>& other);
-    SharedPtr<T>& operator=(SharedPtr<T>&& other);
-    
-    SharedPtr(T* object);
-    SharedPtr(const SharedPtr<T>& other);
-    SharedPtr(SharedPtr<T>&& other);
+    T* get()
+    { return wrapper->ptr; }
 
-    ~SharedPtr();
-    
-private:    
-    SharedPtr(Wrapper* wrapper) : 
-    wrapper(wrapper)
-    {}
+    T operator*  ()
+    { return *wrapper->GetPtr(); }
+
+    T* operator()()
+    { return wrapper->GetPtr(); }
+
+    SharedPtr<T, Default>& operator=(const SharedPtr<T, Default>& other)
+    {
+        other.wrapper = wrapper;
+        wrapper->IncrementCnt();
+    }
+
+    SharedPtr(T* object)
+    {
+        wrapper = new Wrapper<T>(object);
+        wrapper->IncrementCnt();
+    }
+
+    SharedPtr(const SharedPtr<T, Default>& other)
+    {
+        wrapper = other.wrapper;
+        wrapper->IncrementCnt();
+    }
+
+    ~SharedPtr()
+    { 
+        wrapper->DecrementCnt();
+        if (wrapper->GetCnt() == 0)
+            delete wrapper;
+    }
 
 private:    
     Wrapper<T>* wrapper;
 };
 
-template<class T, class... Args>
-SharedPtr<T> make_shared(Args... args)
-{
-    OwnerWrapper<T> owner = OwnerWrapper<T>(args);
-
-}
 
 template <class T>
-void SharedPtr<T>::reset()
+class SharedPtr<T, Owner>
 {
-    printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
-    wrapper->DecrementCnt();
-}
+public:
+    void reset()
+    {
+        printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
+        wrapper->DecrementCnt();
+        if (wrapper->GetCnt() == 0)
+            delete wrapper;
+    }
+
+    size_t use_count()
+    { return wrapper->GetCnt(); }
+    
+    T* get()
+    { return wrapper->ptr; }
+
+    T operator*  ()
+    { return *wrapper->GetPtr(); }
+
+    T* operator()()
+    { return wrapper->GetPtr(); }
+
+    SharedPtr<T, Default>& operator=(const SharedPtr<T, Default>& other)
+    {
+        other.wrapper = wrapper;
+        wrapper->IncrementCnt();
+    }
+
+    SharedPtr(OwnerWrapper<T>* wrapper) : 
+    wrapper (wrapper)
+    {}
+
+    SharedPtr(const SharedPtr<T, Default>& other)
+    {
+        wrapper = other.wrapper;
+        wrapper->IncrementCnt();
+    }
+
+    ~SharedPtr()
+    { 
+        wrapper->DecrementCnt();
+        if (wrapper->GetCnt() == 0)
+            delete wrapper;
+    }
+
+private:    
+    OwnerWrapper<T>* wrapper;
+};
 
 template <class T>
-size_t SharedPtr<T>::use_count()
+SharedPtr<T, Owner> make_shared()
 {
-    return wrapper->GetCnt();
+    return SharedPtr<T, Owner>(new OwnerWrapper<T>());
 }
 
-template <class T>
-T* SharedPtr<T>::get()
+template <class T, class ...CtorArgsT>
+SharedPtr<T, Owner> make_shared(CtorArgsT... CtorArgs)
 {
-    return wrapper->ptr;
-}
-
-template <class T>
-T SharedPtr<T>::operator*()
-{
-    return *wrapper->GetPtr();
-}
-
-template <class T>
-T* SharedPtr<T>::operator() ()
-{
-    return wrapper->GetPtr();
-}
-
-template <class T>
-SharedPtr<T>::SharedPtr(T* object)
-{
-    wrapper = new Wrapper<T>(object);
-    wrapper->IncrementCnt();
-}
-
-template <class T>
-SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& other)
-{
-    other.wrapper = wrapper;
-    wrapper->IncrementCnt();
-}
-
-template <class T>
-SharedPtr<T>::SharedPtr(const SharedPtr<T>& other)
-{
-    wrapper = other.wrapper;
-    wrapper->IncrementCnt();
-}
-
-template <class T>
-SharedPtr<T>::~SharedPtr()
-{
-    wrapper->DecrementCnt();
+    return SharedPtr<T, Owner>(new OwnerWrapper<T>(T(CtorArgs...)));
 }
