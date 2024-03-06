@@ -94,10 +94,6 @@ public:
         wrapper->IncrementCnt();
     }
 
-    SharedPtr(OwnerWrapper<T>* wrapper) : 
-    wrapper (wrapper)
-    {}
-
     SharedPtr(const SharedPtr<T, Default>& other)
     {
         wrapper = other.wrapper;
@@ -110,19 +106,23 @@ public:
         if (wrapper->GetCnt() == 0)
             delete wrapper;
     }
+    
+
+    template <class U, class ...CtorArgsT>
+    friend SharedPtr<U, Owner> make_shared(CtorArgsT... CtorArgs);
 
 private:    
+
+    SharedPtr(OwnerWrapper<T>* wrapper) : 
+    wrapper (wrapper)
+    {}
+
     OwnerWrapper<T>* wrapper;
 };
-
-template <class T>
-SharedPtr<T, Owner> make_shared()
-{
-    return SharedPtr<T, Owner>(new OwnerWrapper<T>());
-}
 
 template <class T, class ...CtorArgsT>
 SharedPtr<T, Owner> make_shared(CtorArgsT... CtorArgs)
 {
     return SharedPtr<T, Owner>(new OwnerWrapper<T>(T(CtorArgs...)));
 }
+
