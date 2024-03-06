@@ -7,7 +7,9 @@ public:
     Wrapper(T* object)
     {
         ptr = object;
-        printf("Object %p wrapper lifetime\n", ptr);
+        #ifdef DUMP_SHARED_PTR
+            printf("Object %p wrapper lifetime\n", ptr);
+        #endif
     }
 
     ~Wrapper()
@@ -23,7 +25,10 @@ public:
 
         if (counter == 0)
         {
-            printf("Object %p end lifetime\n", ptr);
+            #ifdef DUMP_SHARED_PTR
+                printf("Object %p end lifetime\n", ptr);
+            #endif
+
             ptr->~T();
         }
     }
@@ -46,13 +51,17 @@ public:
 
     OwnerWrapper() 
     {
-        printf("Object %p owner wrapper() lifetime\n", &object);
+        #ifdef DUMP_SHARED_PTR
+            printf("Object %p owner wrapper() lifetime\n", &object);
+        #endif
     }
 
     OwnerWrapper(T new_object) :
     object (new_object) 
     {
-        printf("Object %p owner wrapper (object) lifetime\n", &object);
+        #ifdef DUMP_SHARED_PTR
+            printf("Object %p owner wrapper (object) lifetime\n", &object);
+        #endif
     }
 
     ~OwnerWrapper()

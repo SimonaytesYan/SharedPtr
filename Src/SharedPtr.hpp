@@ -5,6 +5,8 @@
 
 #include "Wrapper.hpp"
 
+// #define DUMP_SHARED_PTR
+
 enum SharedPtrType {
     Default,
     Owner
@@ -16,7 +18,10 @@ class SharedPtr
 public:
     void reset()
     {
-        printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
+        #ifdef DUMP_SHARED_PTR
+            printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
+        #endif
+        
         wrapper->DecrementCnt();
         if (wrapper->GetCnt() == 0)
             delete wrapper;
@@ -70,7 +75,10 @@ class SharedPtr<T, Owner>
 public:
     void reset()
     {
-        printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
+        #ifdef DUMP_SHARED_PTR
+            printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
+        #endif
+        
         wrapper->DecrementCnt();
         if (wrapper->GetCnt() == 0)
             delete wrapper;
