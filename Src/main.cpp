@@ -17,6 +17,9 @@ class MyClass
 class MyClass2
 {
     public:
+    MyClass2()
+    {} 
+
     MyClass2(int n) 
     { 
         printf("My class 2 (%d) %p constructor\n", n, this); 
@@ -31,6 +34,9 @@ class MyClass2
 struct MyClass3
 {
     public:
+    MyClass3()
+    {}
+
     MyClass3(int n) :
     value (n) 
     {  

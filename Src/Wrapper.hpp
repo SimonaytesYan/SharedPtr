@@ -1,5 +1,7 @@
 #pragma once
 
+#include <new>
+
 template <class T>
 class Wrapper
 {
@@ -49,45 +51,29 @@ class OwnerWrapper
 {
 public:
 
-    OwnerWrapper() 
+    OwnerWrapper() :
+    counter (0)
     {
         #ifdef DUMP_SHARED_PTR
             printf("Object %p owner wrapper() lifetime\n", &object);
         #endif
     }
 
-    // OwnerWrapper(const T& new_object) :
-    // object (new_object) 
-    // {
-        // #ifdef DUMP_SHARED_PTR
-            // printf("Object %p owner wrapper (object) lifetime\n", &object);
-        // #endif
-    // }
-
-    OwnerWrapper(T&& new_object) :
-    object ((T&&)new_object) 
+    OwnerWrapper(const T& new_object) :
+    counter (0),
+    object  (new_object) 
     {
         #ifdef DUMP_SHARED_PTR
             printf("Object %p owner wrapper (object) lifetime\n", &object);
         #endif
     }
 
-    // OwnerWrapper(T new_object) :
-    // object (new_object) 
-    // {
-        // #ifdef DUMP_SHARED_PTR
-            // printf("Object %p owner wrapper (object) lifetime\n", &object);
-        // #endif
-    // }
-
     template<class ...CtorArgsT>
-    OwnerWrapper(CtorArgsT&&... CtorArgs)
+    OwnerWrapper(CtorArgsT&&... CtorArgs) :
+    counter (0)
     {
-        new (&object) T(CtorArgs...);
+        new ((void*)&object) T(CtorArgs...);
     }
-
-    ~OwnerWrapper()
-    { }
 
     void IncrementCnt()
     { counter++; }
@@ -104,7 +90,13 @@ public:
     T* GetPtr()
     { return &object; }
 
+
+    ~OwnerWrapper()
+    { 
+    }
+
 protected:
     size_t counter;
     T      object;
+    bool   valid;
 };
