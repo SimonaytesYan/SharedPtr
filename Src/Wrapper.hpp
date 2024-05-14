@@ -56,12 +56,34 @@ public:
         #endif
     }
 
-    OwnerWrapper(T new_object) :
-    object (new_object) 
+    // OwnerWrapper(const T& new_object) :
+    // object (new_object) 
+    // {
+        // #ifdef DUMP_SHARED_PTR
+            // printf("Object %p owner wrapper (object) lifetime\n", &object);
+        // #endif
+    // }
+
+    OwnerWrapper(T&& new_object) :
+    object ((T&&)new_object) 
     {
         #ifdef DUMP_SHARED_PTR
             printf("Object %p owner wrapper (object) lifetime\n", &object);
         #endif
+    }
+
+    // OwnerWrapper(T new_object) :
+    // object (new_object) 
+    // {
+        // #ifdef DUMP_SHARED_PTR
+            // printf("Object %p owner wrapper (object) lifetime\n", &object);
+        // #endif
+    // }
+
+    template<class ...CtorArgsT>
+    OwnerWrapper(CtorArgsT&&... CtorArgs)
+    {
+        new (&object) T(CtorArgs...);
     }
 
     ~OwnerWrapper()
