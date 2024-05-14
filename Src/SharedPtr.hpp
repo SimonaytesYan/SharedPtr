@@ -99,6 +99,9 @@ public:
     T* operator()()
     { return wrapper->GetPtr(); }
 
+    T* operator->()
+    { return wrapper->GetPtr(); }
+
     SharedPtr<T, Default>& operator=(const SharedPtr<T, Default>& other)
     {
         other.wrapper = wrapper;
