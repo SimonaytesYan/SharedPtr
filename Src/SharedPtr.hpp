@@ -19,7 +19,7 @@ class SharedPtr
 public:
     void reset()
     {
-        reset = true;
+        reseted = true;
         #ifdef DUMP_SHARED_PTR
             printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
         #endif
@@ -46,7 +46,7 @@ public:
 
     SharedPtr<T, Default>& operator=(const SharedPtr<T, Default>& other)
     {
-        if (!reset)
+        if (!reseted)
         {
             wrapper->DecrementCnt();
             if (wrapper->GetCnt() == 0)
@@ -54,13 +54,13 @@ public:
         }
 
         wrapper = other.wrapper();
-        reset   = other.reset;
-        if (!reset)
+        reseted   = other.reseted;
+        if (!reseted)
             wrapper->IncrementCnt();
     }
 
     SharedPtr(T* object) : 
-    reset (false)
+    reseted (false)
     {
         wrapper = new Wrapper<T>(object);
         wrapper->IncrementCnt();
@@ -68,16 +68,16 @@ public:
     
 
     SharedPtr(const SharedPtr<T, Default>& other) : 
-    reset (other.reset)
+    reseted (other.reseted)
     {
         wrapper = other.wrapper;
-        if (!reset)
+        if (!reseted)
             wrapper->IncrementCnt();
     }
 
     ~SharedPtr()
     { 
-        if (!reset)
+        if (!reseted)
         {
             wrapper->DecrementCnt();
             if (wrapper->GetCnt() == 0)
@@ -87,7 +87,7 @@ public:
 
 private:    
     Wrapper<T>* wrapper;
-    bool        reset;
+    bool        reseted;
 };
 
 template <class T>
@@ -96,7 +96,7 @@ class SharedPtr<T, Owner>
 public:
     void reset()
     {
-        reset = true;
+        reseted = true;
         #ifdef DUMP_SHARED_PTR
             printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
         #endif
@@ -123,7 +123,7 @@ public:
 
     SharedPtr<T, Owner>& operator=(const SharedPtr<T, Owner>& other)
     {
-        if (!reset)
+        if (!reseted)
         {
             wrapper->DecrementCnt();
             if (wrapper->GetCnt() == 0)
@@ -131,16 +131,16 @@ public:
         }
 
         wrapper = other.wrapper();
-        reset   = other.reset;
-        if (!reset)
+        reseted   = other.reseted;
+        if (!reseted)
             wrapper->IncrementCnt();
     }
 
     SharedPtr(const SharedPtr<T, Owner>& other) : 
-    reset (other.reset)
+    reseted (other.reseted)
     {
         wrapper = other.wrapper;
-        if (!reset)
+        if (!reseted)
             wrapper->IncrementCnt();
     }
 
@@ -159,13 +159,13 @@ private:
 
     SharedPtr(OwnerWrapper<T>* wrapper) : 
     wrapper (wrapper), 
-    reset (false)
+    reseted (false)
     {
         wrapper->IncrementCnt();
     }
 
     OwnerWrapper<T>* wrapper;
-    bool             reset;
+    bool             reseted;
 };
 
 #include <utility>
