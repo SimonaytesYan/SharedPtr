@@ -19,14 +19,17 @@ class SharedPtr
 public:
     void reset()
     {
-        reseted = true;
-        #ifdef DUMP_SHARED_PTR
-            printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
-        #endif
-        
-        wrapper->DecrementCnt();
-        if (wrapper->GetCnt() == 0)
-            delete wrapper;
+        if (!reseted)
+        {
+            reseted = true;
+            #ifdef DUMP_SHARED_PTR
+                printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
+            #endif
+
+            wrapper->DecrementCnt();
+            if (wrapper->GetCnt() == 0)
+                delete wrapper;
+        }
     }
 
     size_t use_count()
@@ -96,14 +99,17 @@ class SharedPtr<T, Owner>
 public:
     void reset()
     {
-        reseted = true;
-        #ifdef DUMP_SHARED_PTR
-            printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
-        #endif
-        
-        wrapper->DecrementCnt();
-        if (wrapper->GetCnt() == 0)
-            delete wrapper;
+        if (!reseted)
+        {
+            reseted = true;
+            #ifdef DUMP_SHARED_PTR
+                printf("SharedPtr reset. Object %p\n", wrapper->GetPtr());
+            #endif
+            
+            wrapper->DecrementCnt();
+            if (wrapper->GetCnt() == 0)
+                delete wrapper;
+        }
     }
 
     size_t use_count()
