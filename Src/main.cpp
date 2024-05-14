@@ -55,7 +55,7 @@ void TestSharedPtr()
 
 void TestMakeShared()
 {
-    SharedPtr<MyClass2, Owner> array2(make_shared<MyClass2, int>(10));
+    SharedPtr<MyClass2, Owner> array2(MakeShared<MyClass2, int>(10));
     array2.reset();
 
     printf("End test\n");

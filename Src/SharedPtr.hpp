@@ -120,7 +120,7 @@ public:
     
 
     template <class U, class ...CtorArgsT>
-    friend SharedPtr<U, Owner> make_shared(CtorArgsT... CtorArgs);
+    friend SharedPtr<U, Owner> MakeShared(CtorArgsT... CtorArgs);
 
 private:    
 
@@ -132,7 +132,7 @@ private:
 };
 
 template <class T, class ...CtorArgsT>
-SharedPtr<T, Owner> make_shared(CtorArgsT... CtorArgs)
+SharedPtr<T, Owner> MakeShared(CtorArgsT... CtorArgs)
 {
     return SharedPtr<T, Owner>(new OwnerWrapper<T>(T(CtorArgs...)));
 }
