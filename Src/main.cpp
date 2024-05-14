@@ -28,6 +28,21 @@ class MyClass2
     }
 };
 
+struct MyClass3
+{
+    public:
+    MyClass3(int n) :
+    value (n) 
+    {  
+    }
+
+    ~MyClass3() 
+    { 
+    }
+
+    int value;
+};
+
 void TestSharedPtr()
 {
     MyClass class_ex;
@@ -46,6 +61,15 @@ void TestMakeShared()
     printf("End test\n");
 }
 
+void Test()
+{
+    MyClass3 my_class(10);
+    SharedPtr<MyClass3> ptr(&my_class);
+    ptr->value = 11;
+
+    printf("my_class.value = %d\n", my_class.value);
+}
+
 int main()
 {
     printf("TEST SHARED PTR\n");
@@ -53,4 +77,7 @@ int main()
     printf("============================\n");
     printf("TEST MAKE SHARED\n");
     TestMakeShared();
+    printf("============================\n");
+    printf("TEST\n");
+    Test();
 }
