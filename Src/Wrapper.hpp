@@ -41,7 +41,7 @@ public:
 
 protected:
     size_t counter;
-    T*  ptr;
+    T*     ptr;
 };
 
 template <class T>

@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <type_traits>
 
 #include "Wrapper.hpp"
 
@@ -67,7 +68,6 @@ public:
 private:    
     Wrapper<T>* wrapper;
 };
-
 
 template <class T>
 class SharedPtr<T, Owner>
