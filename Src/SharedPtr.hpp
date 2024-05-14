@@ -28,7 +28,10 @@ public:
 
             wrapper->DecrementCnt();
             if (wrapper->GetCnt() == 0)
+            {
+                fprintf(stderr, "Delete wrapper\n");
                 delete wrapper;
+            }
         }
     }
 
@@ -53,7 +56,10 @@ public:
         {
             wrapper->DecrementCnt();
             if (wrapper->GetCnt() == 0)
+            {
+                fprintf(stderr, "Delete wrapper\n");
                 delete wrapper;
+            }
         }
 
         wrapper = other.wrapper();
@@ -84,7 +90,10 @@ public:
         {
             wrapper->DecrementCnt();
             if (wrapper->GetCnt() == 0)
+            {
+                fprintf(stderr, "Delete wrapper\n");
                 delete wrapper;
+            }
         }
     }
 

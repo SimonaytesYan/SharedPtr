@@ -24,15 +24,6 @@ public:
     { 
         assert(counter > 0);
         counter--;
-
-        if (counter == 0)
-        {
-            #ifdef DUMP_SHARED_PTR
-                printf("Object %p end lifetime\n", ptr);
-            #endif
-
-            ptr->~T();
-        }
     }
 
     size_t GetCnt()
@@ -92,11 +83,9 @@ public:
 
 
     ~OwnerWrapper()
-    { 
-    }
+    { }
 
 protected:
     size_t counter;
     T      object;
-    bool   valid;
 };
