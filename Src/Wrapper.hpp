@@ -61,9 +61,9 @@ public:
 
     template<class ...CtorArgsT>
     OwnerWrapper(CtorArgsT&&... CtorArgs) :
-    counter (0)
+    counter (0),
+    object (CtorArgs...)
     {
-        new ((void*)&object) T(CtorArgs...);
     }
 
     void IncrementCnt()
